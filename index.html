@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💰 Money Management</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+  }
+  body {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .container {
+    background: #fff;
+    max-width: 500px;
+    width: 100%;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  }
+  h1 {
+    text-align: center;
+    color: #1e3c72;
+    margin-bottom: 5px;
+    font-size: 24px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+  .saldo-box {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(17,153,142,0.4);
+  }
+  .saldo-box p {
+    font-size: 13px;
+    opacity: 0.9;
+  }
+  .saldo-box h2 {
+    font-size: 32px;
+    margin-top: 5px;
+    word-break: break-all;
+  }
+  .form-group {
+    margin-bottom: 12px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  input, select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: 0.2s;
+    outline: none;
+  }
+  input:focus, select:focus {
+    border-color: #2a5298;
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    color: white;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  }
+  .btn-masuk {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+  }
+  .btn-keluar {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+  }
+  .btn-delete-all {
+    background: #333;
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    font-size: 13px;
+  }
+  .riwayat-title {
+    margin: 25px 0 10px;
+    color: #1e3c72;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .riwayat-title span {
+    font-size: 12px;
+    color: #888;
+    font-weight: normal;
+  }
+  .riwayat {
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 5px;
+  }
+  .riwayat::-webkit-scrollbar { width: 6px; }
+  .riwayat::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+  .item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: #f8f9fb;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    animation: fadeIn 0.3s;
+    border-left: 4px solid;
+  }
+  .item.masuk { border-left-color: #38ef7d; }
+  .item.keluar { border-left-color: #f45c43; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .item-icon {
+    font-size: 22px;
+    margin-right: 12px;
+  }
+  .item-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .item-info .ket {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .item-info .tgl {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+  }
+  .item-jumlah {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .item-jumlah.masuk { color: #11998e; }
+  .item-jumlah.keluar { color: #eb3349; }
+  .btn-hapus {
+    background: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 26px;
+    height: 26px;
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .btn-hapus:hover { background: #c0392b; }
+  .empty {
+    text-align: center;
+    color: #bbb;
+    padding: 30px;
+    font-size: 14px;
+  }
+  .empty span { font-size: 40px; display: block; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>💰 Money Management</h1>
+  <p class="subtitle">Kelola uang masuk & keluar dengan mudah</p>
+
+  <div class="saldo-box">
+    <p>Total Saldo</p>
+    <h2 id="saldo">Rp 0</h2>
+  </div>
+
+  <div class="form-group">
+    <label>Keperluan / Keterangan</label>
+    <input type="text" id="keterangan" placeholder="Contoh: Makan siang, Gaji, Belanja..." maxlength="50">
+  </div>
+
+  <div class="form-group">
+    <label>Jumlah (Rp)</label>
+    <input type="number" id="jumlah" placeholder="0" min="1">
+  </div>
+
+  <div class="form-group">
+    <label>Kategori</label>
+    <select id="kategori">
+      <option value="💵 Gaji">💵 Gaji</option>
+      <option value="🍔 Makan">🍔 Makan</option>
+      <option value="🚗 Transport">🚗 Transport</option>
+      <option value="🛒 Belanja">🛒 Belanja</option>
+      <option value="🏠 Tagihan">🏠 Tagihan</option>
+      <option value="🎮 Hiburan">🎮 Hiburan</option>
+      <option value="💊 Kesehatan">💊 Kesehatan</option>
+      <option value="🎁 Lainnya">🎁 Lainnya</option>
+    </select>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-masuk" onclick="tambah('masuk')">➕ Uang Masuk</button>
+    <button class="btn btn-keluar" onclick="tambah('keluar')">➖ Uang Keluar</button>
+  </div>
+
+  <button class="btn btn-delete-all" onclick="hapusSemua()">🗑️ Delete All</button>
+
+  <div class="riwayat-title">
+    📋 Riwayat Transaksi
+    <span id="counter">0 item</span>
+  </div>
+  <div class="riwayat" id="riwayat"></div>
+</div>
+
+<script>
+  // Load data dari localStorage
+  let transaksi = JSON.parse(localStorage.getItem('transaksi_keuangan')) || [];
+
+  // Format Rupiah
+  function rupiah(angka) {
+    return 'Rp ' + angka.toLocaleString('id-ID');
+  }
+
+  // Simpan ke localStorage
+  function simpan() {
+    localStorage.setItem('transaksi_keuangan', JSON.stringify(transaksi));
+  }
+
+  // Render tampilan
+  function render() {
+    const riwayat = document.getElementById('riwayat');
+    const saldoEl = document.getElementById('saldo');
+    const counter = document.getElementById('counter');
+
+    // Hitung saldo
+    let saldo = 0;
+    transaksi.forEach(t => {
+      saldo += t.tipe === 'masuk' ? t.jumlah : -t.jumlah;
+    });
+    saldoEl.textContent = rupiah(saldo);
+    saldoEl.style.color = saldo < 0 ? '#fff' : '#fff';
+
+    counter.textContent = transaksi.length + ' item';
+
+    // Render list
+    if (transaksi.length === 0) {
+      riwayat.innerHTML = '<div class="empty"><span>💸</span>Belum ada transaksi.<br>Mulai catat sekarang!</div>';
+      return;
+    }
+
+    riwayat.innerHTML = transaksi.map((t, i) => {
+      const ikon = t.tipe === 'masuk' ? '💸' : '🛍️';
+      const tanda = t.tipe === 'masuk' ? '+' : '-';
+      return `
+        <div class="item ${t.tipe}">
+          <div class="item-icon">${t.kategori.split(' ')[0] || ikon}</div>
+          <div class="item-info">
+            <div class="ket">${escapeHtml(t.keterangan)}</div>
+            <div class="tgl">${t.kategori} • ${t.tanggal}</div>
+          </div>
+          <div class="item-jumlah ${t.tipe}">${tanda}${rupiah(t.jumlah)}</div>
+          <button class="btn-hapus" onclick="hapusItem(${i})" title="Hapus">✕</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Escape HTML biar aman
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Tambah transaksi
+  function tambah(tipe) {
+    const keterangan = document.getElementById('keterangan').value.trim();
+    const jumlah = parseInt(document.getElementById('jumlah').value);
+    const kategori = document.getElementById('kategori').value;
+
+    if (!keterangan) return alert('⚠️ Isi keperluan/keterangan dulu!');
+    if (!jumlah || jumlah <= 0) return alert('⚠️ Jumlah harus lebih dari 0!');
+
+    const sekarang = new Date();
+    const tanggal = sekarang.toLocaleDateString('id-ID', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    transaksi.unshift({
+      keterangan,
+      jumlah,
+      kategori,
+      tipe,
+      tanggal
+    });
+
+    simpan();
+    render();
+
+    // Reset form
+    document.getElementById('keterangan').value = '';
+    document.getElementById('jumlah').value = '';
+    document.getElementById('keterangan').focus();
+  }
+
+  // Hapus satu item
+  function hapusItem(index) {
+    if (!confirm('Hapus transaksi ini?')) return;
+    transaksi.splice(index, 1);
+    simpan();
+    render();
+  }
+
+  // Hapus semua
+  function hapusSemua() {
+    if (transaksi.length === 0) return alert('Belum ada data untuk dihapus.');
+    if (!confirm('⚠️ Yakin hapus SEMUA riwayat transaksi?\nData tidak bisa dikembalikan!')) return;
+    transaksi = [];
+    simpan();
+    render();
+  }
+
+  // Inisialisasi
+  render();
+</script>
+</body>
+</html>
